@@ -1,0 +1,5 @@
+arbre
+chat
+maison
+soleil
+voiture

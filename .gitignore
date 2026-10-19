@@ -1,0 +1,7 @@
+venv/
+cache_npy/
+__pycache__/
+*.pyc
+.vscode/
+galerie/
+*.npy
