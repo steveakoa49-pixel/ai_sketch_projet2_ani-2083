@@ -1,11 +1,11 @@
-# RAPPORT — Projet AI Sketch
+# RAPPORT — Projet Ne72on Sketch AI
 ## Reconnaissance de dessins à la main par intelligence artificielle
 
 **Cours** : ANI-2083 – Modèle de la SAT et IA dans les Arts Technologiques  
 **Mini-projet** : n°2 — Semaine 2  
 **Auteur(s)** : [Steve Akoa / Groupe 4]  
 **Enseignant** : Dr. Aurelle TCHAGNA  
-**Date** : 14 octobre 2026
+**Date** : 20 octobre 2026
 
 ---
 
@@ -23,7 +23,7 @@ Développer une application **desktop** dans laquelle un utilisateur dessine un 
 
 1. Constituer un **dataset** de dessins à la main à partir d'une source publique.
 2. Entraîner un **réseau de neurones convolutif (CNN)** à classifier ces dessins.
-3. Développer une **interface graphique** intuitive avec PyQt5.
+3. Développer une **interface graphique** intuitive avec PyQt5 ("Neon Studio").
 4. **Évaluer les performances** du modèle sur des dessins réalisés en temps réel.
 
 ---
@@ -67,6 +67,7 @@ Un **split 80/20** (train/test) a été réalisé avec `train_test_split` de sci
 ### 2.4 Aperçu visuel
 
 Un script `preview.py` permet d'afficher une grille de 5×8 dessins (un par classe) pour vérifier visuellement la qualité du dataset. Résultat observé : les dessins sont propres, centrés et bien labellisés.
+![Test 0](screenshots/grille_dessin_par_classe.png)
 
 ---
 
@@ -119,30 +120,34 @@ Input (28×28×1)
 - **PyQt5** pour la fenêtre et les widgets.
 - **QImage** comme canvas de dessin (400×400 px, fond blanc).
 - **QPainter / QPen** pour tracer les traits (taille et couleur paramétrables).
+- **Design "Neon Studio"** : thème sombre avec des accents de couleurs vives.
 
 ### 4.2 Fonctionnalités implémentées
 
+L'interface, baptisée **"Neon Studio"**, arbore un design sombre et moderne.
+
 | Élément | Description |
 |---|---|
-| Zone de dessin | Canvas 400×400 avec souris (clic gauche maintenu) |
-| Curseur « Taille du pinceau » | 1 à 40 pixels |
-| Menu « Couleur » | Noir, Rouge, Bleu, Vert |
+| Zone de dessin | Canvas 650×550 (fond blanc) avec souris (clic gauche maintenu) |
+| Curseur « Taille » | 2 à 40 pixels |
+| Palette de couleurs | 10 couleurs sombres et saturées (Noir, Bleu, Rouge, etc.) |
+| Outil Gomme | Effacement réel (le trait redevient blanc) |
 | Bouton **Effacer** | Réinitialise le canvas en blanc |
 | Bouton **Enregistrer** | Ouvre une boîte de dialogue pour exporter en PNG |
 | Bouton **Reconnaître** | Lance la prédiction et affiche résultat + confiance |
-| Label **Prédiction** | Affiche la classe reconnue |
+| Label **Prédiction** | Affiche la classe reconnue en bleu néon |
 | Label **Confiance** | Affiche le score en pourcentage |
+
 
 ### 4.3 Pipeline de prédiction
 
-1. L'utilisateur dessine → image 400×400 dans le canvas.
+1. L'utilisateur dessine → image 650×550 dans le canvas.
 2. Le canvas est converti en **niveaux de gris** (numpy array).
-3. **Seuillage inversé** (`THRESH_BINARY_INV`) : fond noir, trait blanc.
-4. **Recadrage automatique** sur la bounding box du dessin (OpenCV).
-5. **Redimensionnement** en conservant le ratio dans une image 28×28.
-6. **Normalisation** et **reshape** en (1, 28, 28, 1).
-7. **Prédiction** via `model.predict()` → vecteur de 5 probabilités.
-8. **argmax** → classe prédite + confiance associée.
+3. **Recadrage automatique** sur la bounding box du dessin (OpenCV).
+4. **Redimensionnement** en conservant le ratio dans une image 28×28.
+5. **Normalisation** et **reshape** en (1, 28, 28, 1).
+6. **Prédiction** via `model.predict()` → vecteur de 5 probabilités.
+7. **argmax** → classe prédite + confiance associée.
 
 ---
 
@@ -161,34 +166,33 @@ Sur les 15 epochs, les résultats finaux sont :
 
 ⚠️ **Observation** : la différence accuracy_train (99,4 %) vs val_accuracy (95,2 %) indique un **léger sur-apprentissage**, mais reste acceptable (< 5 points d'écart).
 
-### 5.2 Tests en conditions réelles
+### 5.2 Tests en conditions réelles (Interface Neon Studio)
 
-Nous avons testé l'application avec **11 dessins réalisés en temps réel**, en variant le type d'objet et la taille du pinceau.
+Nous avons testé l'application avec **7 dessins réalisés en temps réel**, en utilisant la palette de couleurs sombres de l'interface sur le canvas blanc.
 
 | # | Dessin | Prédiction | Confiance | Résultat |
 |---|---|---|---|---|
-| 1 | Maison (pinceau épais) | `maison` | **99,78 %** | ✅ |
-| 2 | Maison (pinceau fin) | `maison` | 60,66 % | ✅ |
-| 3 | Maison détaillée | `maison` | **99,86 %** | ✅ |
-| 4 | Soleil (rayons droits) | `soleil` | 96,12 % | ✅ |
-| 5 | Chat (oreilles + moustaches) | `chat` | 96,40 % | ✅ |
-| 6 | Soleil (rayons courbés) | `chat` | 49,47 % | ❌ |
-| 7 | Voiture | `voiture` | 95,04 % | ✅ |
-| 8 | Arbre | `arbre` | 97,28 % | ✅ |
+| 1 | Maison simple (orange) | `maison` | **97,31 %** | ✅ |
+| 2 | Maison détaillée (noir) | `maison` | 74,33 % | ✅ |
+| 3 | Soleil (orange) | `soleil` | 95,06 % | ✅ |
+| 4 | Voiture (noir) | `voiture` | **99,13 %** | ✅ |
+| 5 | Arbre (gris/bleu) | `arbre` | **99,95 %** | ✅ |
+| 6 | Chat (violet) | `chat` | 97,27 % | ✅ |
 
-**Taux de réussite observé** : **7 / 8** (87,5 %).
 
-**Observation clé** : la confiance du modèle est **fortement corrélée à la taille du pinceau**. Un pinceau épais (15–20 px) donne des confiances > 95 %, tandis qu'un pinceau fin (5–8 px) fait chuter la confiance à 30–60 %.
+**Taux de réussite observé** : **6 / 6** (100 %).
+
+**Observation clé** : La Maison détaillée a obtenu une confiance plus basse (74%) que la maison simple (97%). Les détails supplémentaires (porte, fenêtre) éloignent parfois le dessin du modèle canonique appris par l'IA.
 
 ### 5.3 Tests sur des dessins hors-catégories
 
 | Dessin | Prédiction | Confiance |
 |---|---|---|
-| Zigzag montant | `chat` | 94,19 % |
-| Zigzag horizontal | `voiture` | 60,24 % |
-| Étoile | `soleil` | 32,02 % |
+|  Étoile  | `chat` | 56,67 % |
 
-⚠️ Le modèle attribue toujours une classe, même à des dessins qui ne représentent rien. Ce comportement est analysé en section 6.1.
+
+⚠️ Le modèle attribue toujours une classe, même à des dessins qui ne représentent rien. La confiance de 56% montre que le modèle "hésite", mais l'architecture Softmax le force à choisir. Ce comportement est analysé en section 6.1.
+
 ---
 
 ## 6. Discussion
@@ -198,37 +202,27 @@ Nous avons testé l'application avec **11 dessins réalisés en temps réel**, e
 **Points positifs :**
 
 - Le modèle atteint **95,2 % de précision** sur les données de validation.
-- Les dessins **aux traits épais et formes simples** sont reconnus avec une confiance > 95 % (maison 99,78 %, arbre 97,28 %, chat 96,40 %, soleil 96,12 %, voiture 95,04 %).
+- La nouvelle interface avec **fond blanc et traits sombres** permet à l'IA de reconnaître les formes avec une confiance frôlant les **100 %** (Arbre à 99,95 %, Voiture à 99,13 %).
 - La reconnaissance fonctionne **en temps réel** sans latence perceptible.
 
-**Point 1 — Influence de la taille du pinceau (observation clé)**
+**Point 1 — Influence des détails (observation clé)**
 
-Nous avons observé expérimentalement que **plus le pinceau est épais, plus la confiance est élevée**. Ce phénomène s'explique par deux facteurs :
+Nous avons observé expérimentalement que **plus le dessin est détaillé, plus la confiance baisse**. 
+*Exemple concret* : la même maison dessinée avec juste un carré et un triangle donne **97,31 %** de confiance, contre **74,33 %** avec une porte et une fenêtre. Le modèle reconnaît donc mieux le **concept épuré** correspondant au style Quick Draw.
 
-1. **Le seuillage binaire** (`cv2.threshold` avec `THRESH_BINARY_INV`) : un trait épais reste solide après binarisation, un trait fin peut se fragmenter et perdre de l'information.
-2. **La cohérence avec Quick Draw** : le dataset d'entraînement contient des dessins aux traits larges (réalisés au doigt ou à la souris). Un trait épais s'en rapproche visuellement, un trait fin s'en éloigne.
+**Point 2 — Confusion hors-catégorie**
 
-**Exemple concret** : la même maison dessinée avec un pinceau épais donne **99,78 %** de confiance, contre **60,66 %** avec un pinceau fin. Le modèle « reconnaît » donc moins le **concept de maison** que le **style graphique** caractéristique du dataset.
+Une étoile a été classée `chat` avec 56,67 % de confiance. Cela illustre la limite d'un modèle qui ne connaît que 5 classes.
 
-**Point 2 — Confusion entre classes proches**
-
-Un soleil aux **rayons courbés** a été classé `chat` avec 49,47 % de confiance. Cela s'explique par la ressemblance entre :
-- les **moustaches d'un chat** et les **rayons ondulés**,
-- le **cercle central** d'un soleil et la **tête** d'un chat.
-
-**Point 3 — Absence de classe « inconnu »**
-
-Le modèle étant entraîné sur 5 classes uniquement, il est **obligé** de choisir parmi ces 5 classes. Un zigzag a été classé `chat` (94,19 %) et un autre `voiture` (60,24 %). Une étoile a été classée `soleil` (32,02 %) — ce dernier cas est intéressant car la confiance est très basse, signe que le modèle « n'est pas sûr de lui ».
-
-**Recommandation pratique** : pour une meilleure utilisation, utiliser un **pinceau épais (15–20 px)** et dessiner des formes **simples, centrées et peu détaillées**, similaires au style Quick Draw.
+**Recommandation pratique** : pour une meilleure utilisation, utiliser un **pinceau épais (12–15 px)**, des **couleurs sombres**, et dessiner des formes **simples, centrées et peu détaillées**, similaires au style Quick Draw.
 
 ### 6.2 Limites techniques
 
 | Limite | Cause |
 |---|---|
-| Sensibilité à l'épaisseur du trait | Quick Draw = traits fins ; canvas Qt = traits épais |
-| Sensibilité à la taille du dessin | Quick Draw = dessins centrés et grands |
+| Sensibilité aux détails | Le dataset Quick Draw contient des dessins très épurés |
 | Pas d'abstention possible | Architecture softmax sans classe "unknown" |
+| Sensibilité au contraste | L'IA nécessite des traits sombres sur fond clair |
 
 ### 6.3 Améliorations envisagées
 
@@ -236,7 +230,7 @@ Le modèle étant entraîné sur 5 classes uniquement, il est **obligé** de cho
 2. **Ajout d'une classe `unknown`** : entraînée sur des dessins aléatoires (bruit).
 3. **Dataset élargi** : passer de 500 à 2000 images par classe.
 4. **CNN plus profond** ou **transfer learning** (MobileNetV2, EfficientNet) pour extraire des features plus fines.
-5. **Normalisation du trait** : ajuster automatiquement l'épaisseur du dessin pour se rapprocher du style Quick Draw.
+
 
 ### 6bis. Bonus créativité
 
@@ -245,13 +239,9 @@ Au-delà des fonctionnalités minimales demandées, nous avons implémenté **4 
 1. **Filtres artistiques** (OpenCV) : crayon, cartoon, pastel + reset
 2. **Galerie visuelle** : sauvegarde des dessins + miniatures cliquables
 3. **Historique des prédictions** : liste conservant les résultats
-4. **Palette étendue** : 8 couleurs au lieu de 4 + pinceau par défaut plus épais
+4. **Palette étendue** : 10 couleurs sombres optimisées pour l'IA
 
-Ces ajouts renforcent l'aspect **outil créatif** de l'application, en permettant à l'utilisateur non seulement de dessiner et de faire reconnaître son dessin, mais aussi de le **transformer artistiquement**, de le **conserver**, et d'en **réaliser plusieurs d'affilée** sans perdre le fil.
-
-<p align="center">
-  <img src="screenshots/bonus_creativite.png" width="600" alt="Bonus créativité">
-</p>
+Ces ajouts renforcent l'aspect **outil créatif** de l'application, en permettant à l'utilisateur de dessiner, faire reconnaître son dessin, le transformer artistiquement, le conserver, et en réaliser plusieurs d'affilée.
 
 ---
 
@@ -261,10 +251,10 @@ Ce projet nous a permis de mettre en œuvre **l'ensemble de la chaîne IA** :
 
 1. **Collecte et préparation** de 2 500 images issues de Google Quick, Draw!.
 2. **Conception et entraînement** d'un CNN atteignant **95,2 % de précision** en validation.
-3. **Développement d'une application** PyQt5 complète et fonctionnelle.
-4. **Évaluation en conditions réelles** avec un taux de réussite de 83 %.
+3. **Développement d'une application** PyQt5 complète avec un design original ("Neon Studio").
+4. **Évaluation en conditions réelles** avec un taux de réussite de **100 %** sur les 6 dessins des classes cibles.
 
-L'application **AI Sketch** remplit l'ensemble des fonctionnalités minimales demandées :
+L'application **Neon Sketch AI** remplit l'ensemble des fonctionnalités minimales demandées :
 - zone de dessin,
 - boutons Effacer / Enregistrer / Reconnaître,
 - choix de la taille du pinceau et de la couleur,
@@ -287,90 +277,60 @@ Au-delà de l'aspect technique, ce projet nous a sensibilisés aux **limites pra
 
 ### Annexe A — Captures d'écran
 
-Les 11 captures ci-dessous correspondent aux tests présentés en section 5.2 et 5.3.
+Les 7 captures ci-dessous correspondent aux tests présentés en section 5.2 et 5.3.
 
 #### A.1 — Tests sur les 5 classes
 
-**Test 1 — Maison simple (pinceau épais)**  
-*Prédiction : `maison` — Confiance : 99,78 % — ✅ Correct*
+**Test 1 — Maison simple**  
+*Prédiction : `maison` — Confiance : 97,31 % — ✅ Correct*
 
-![Test 1](screenshots/test_01_maison_epais.png)
-
----
-
-**Test 2 — Maison simple (pinceau fin)**  
-*Prédiction : `maison` — Confiance : 60,66 % — ✅ Correct*  
-👉 Illustration de l'**influence de la taille du pinceau** (voir section 6.1).
-
-![Test 2](screenshots/test_02_maison_fin.png)
+![Test 1](screenshots/test_01_maison_simple.png)
 
 ---
 
-**Test 3 — Maison détaillée (porte + fenêtre, pinceau épais)**  
-*Prédiction : `maison` — Confiance : 99,86 % — ✅ Correct*
+**Test 2 — Maison détaillée (porte + fenêtre)**  
+*Prédiction : `maison` — Confiance : 74,33 % — ✅ Correct*  
+👉 Illustration de l'**influence des détails** (voir section 6.1).
 
-![Test 3](screenshots/test_03_maison_detaillee.png)
-
----
-
-**Test 4 — Soleil (rayons droits)**  
-*Prédiction : `soleil` — Confiance : 96,12 % — ✅ Correct*
-
-![Test 4](screenshots/test_04_soleil.png)
+![Test 2](screenshots/test_02_maison_detaillee.png)
 
 ---
 
-**Test 5 — Chat (oreilles + moustaches)**  
-*Prédiction : `chat` — Confiance : 96,40 % — ✅ Correct*
+**Test 3 — Soleil (rayons droits)**  
+*Prédiction : `soleil` — Confiance : 95,06 % — ✅ Correct*
 
-![Test 5](screenshots/test_05_chat.png)
-
----
-
-**Test 6 — Soleil (rayons courbés) — cas de confusion**  
-*Prédiction : `chat` — Confiance : 49,47 % — ❌ Faux*  
-👉 Les rayons courbés ressemblent aux moustaches d'un chat (voir section 6.1).
-
-![Test 6](screenshots/test_06_soleil_courbe.png)
+![Test 3](screenshots/test_03_soleil.png)
 
 ---
 
-**Test 7 — Voiture (carrosserie + roues)**  
-*Prédiction : `voiture` — Confiance : 95,04 % — ✅ Correct*
+**Test 4 — Voiture (carrosserie + roues)**  
+*Prédiction : `voiture` — Confiance : 99,13 % — ✅ Correct*
 
-![Test 7](screenshots/test_07_voiture.png)
+![Test 4](screenshots/test_04_voiture.png)
 
 ---
 
-**Test 8 — Arbre (tronc + feuillage)**  
-*Prédiction : `arbre` — Confiance : 97,28 % — ✅ Correct*
+**Test 5 — Arbre (tronc + feuillage)**  
+*Prédiction : `arbre` — Confiance : 99,95 % — ✅ Correct*
 
-![Test 8](screenshots/test_08_arbre.png)
+![Test 5](screenshots/test_05_arbre.png)
+
+---
+
+**Test 6 — Chat (oreilles + moustaches)**  
+*Prédiction : `chat` — Confiance : 97,27 % — ✅ Correct*
+
+![Test 6](screenshots/test_06_chat.png)
 
 ---
 
 #### A.2 — Tests sur des dessins hors-catégories
 
-**Test 9 — Zigzag montant**  
-*Prédiction : `chat` — Confiance : 94,19 % — ❌ Faux*  
+**Test 7 — Étoile**  
+*Prédiction : `chat` — Confiance : 56,67 % — ❌ Faux*  
 👉 Le modèle est forcé de choisir parmi les 5 classes.
 
-![Test 9](screenshots/test_09_zigzag1.png)
-
----
-
-**Test 10 — Zigzag horizontal**  
-*Prédiction : `voiture` — Confiance : 60,24 % — ❌ Faux*
-
-![Test 10](screenshots/test_10_zigzag2.png)
-
----
-
-**Test 11 — Étoile**  
-*Prédiction : `soleil` — Confiance : 32,02 % — ❌ Faux*  
-👉 La confiance très basse (32 %) montre que le modèle « n'est pas sûr de lui ». Sans classe "inconnu", il est contraint de choisir.
-
-![Test 11](screenshots/test_11_etoile.png)
+![Test 7](screenshots/test_07_etoile.png)
 
 ### Annexe B — Extrait du code
 
@@ -395,7 +355,7 @@ def load_data():
     X = np.array(X).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
     y = np.array(y)
     return X, y, classes
-```
+```     
 
 #### B.2 — Architecture du CNN dans `train_model.py`
 
@@ -444,11 +404,14 @@ def preprocess(canvas_gray):
 ```python
 def get_numpy_gray(self):
     """Convertit le canvas QImage en tableau numpy (niveaux de gris)."""
-    img = self.image.convertToFormat(QImage.Format_Grayscale8)
-    ptr = img.bits()
-    ptr.setsize(img.byteCount())
-    arr = np.frombuffer(ptr, np.uint8).reshape(img.height(), img.width())
-    return arr.copy()
+    buffer = QBuffer()
+    buffer.open(QIODevice.WriteOnly)
+    self.image.save(buffer, "PNG")
+    
+    data = np.frombuffer(buffer.data(), np.uint8)
+    img = cv2.imdecode(data, cv2.IMREAD_GRAYSCALE)
+    buffer.close()
+    return img
 ```
 
 ### Annexe C — Structure des livrables
@@ -458,7 +421,7 @@ Arborescence complète du projet `ai_sketch/` telle qu'organisée dans l'espace 
 ```
 ai_sketch/
 │
-├── app.py                      # Application principale (interface PyQt5)
+├── app.py                      # Application principale (Neon Studio)
 ├── train_model.py              # Script d'entraînement du CNN
 ├── predict.py                  # Prédiction sur un dessin
 ├── download_data.py            # Téléchargement du dataset Quick Draw
@@ -468,48 +431,40 @@ ai_sketch/
 ├── RAPPORT.md                  # Rapport de projet (ce fichier)
 │
 ├── data/                       # Dataset (2500 images, 5 classes)
-│   ├── arbre/                  #   500 images (.png)
-│   ├── chat/                   #   500 images (.png)
-│   ├── maison/                 #   500 images (.png)
-│   ├── soleil/                 #   500 images (.png)
-│   └── voiture/                #   500 images (.png)
+│   ├── arbre/                  
+│   ├── chat/                   
+│   ├── maison/                 
+│   ├── soleil/                 
+│   └── voiture/                
 │
 ├── model/                      # Modèle entraîné
-│   ├── sketch_model.h5         #   Réseau de neurones (fichier HDF5)
-│   └── classes.txt             #   Liste des classes (ordre des labels)
+│   ├── sketch_model.h5         
+│   └── classes.txt             
 │
 ├── screenshots/                # Captures d'écran des tests
-│   ├── test_01_maison_epais.png
-│   ├── test_02_maison_fin.png
-│   ├── test_03_maison_detaillee.png
-│   ├── test_04_soleil.png
-│   ├── test_05_chat.png
-│   ├── test_06_soleil_courbe.png
-│   ├── test_07_voiture.png
-│   ├── test_08_arbre.png
-│   ├── test_09_zigzag1.png
-│   ├── test_10_zigzag2.png
-│   └── test_11_etoile.png
+│   ├── test_01_maison_simple.png
+│   ├── test_02_maison_detaillee.png
+│   ├── test_03_soleil.png
+│   ├── test_04_voiture.png
+│   ├── test_05_arbre.png
+│   ├── test_06_chat.png
+│   └── test_07_etoile.png
 │
-├── cache_npy/                  # Cache des fichiers .npy téléchargés
-│   ├── house.npy               #   (réutilisés si besoin de ré-entraîner)
+├── cache_npy/                  # Cache des fichiers .npy
+│   ├── house.npy               
 │   ├── tree.npy
 │   ├── car.npy
 │   ├── cat.npy
 │   └── sun.npy
 │
 └── venv/                       # Environnement virtuel Python 3.11
-    ├── Include/
-    ├── Lib/
-    ├── Scripts/
-    └── pyvenv.cfg
 ```
 
 ### Légende
 
 | Dossier / fichier | Rôle |
 |---|---|
-| `app.py` | Point d'entrée — lance la fenêtre PyQt5 |
+| `app.py` | Point d'entrée — lance l'interface Neon Studio |
 | `train_model.py` | Charge `data/` et entraîne le CNN |
 | `predict.py` | Fonction de prédiction utilisée par `app.py` |
 | `download_data.py` | Télécharge les 5 fichiers `.npy` depuis Google |

@@ -1,19 +1,22 @@
-# AI Sketch — Reconnaissance de dessins à la main
+# Neon Sketch AI — Reconnaissance de dessins à la main
 
 Projet du cours **ANI-2083 – Modèle de la SAT et IA dans les Arts Technologiques**
 (Mini-projet 2 — Semaine 2)
 
 **Auteur** : [Steve Akoa / Groupe 4]
-**Date** : 14 octobre 2026
+**Date** : 20 octobre 2026
 **Enseignant** : Dr. Aurelle TCHAGNA
 
 ---
 
 ## 1. Description
 
-**AI Sketch** est une application desktop qui permet à l'utilisateur de **dessiner un objet à la souris** dans une zone blanche, puis de demander à un modèle d'intelligence artificielle de **reconnaître automatiquement** ce qui a été dessiné.
+**Neon Sketch AI** est une application desktop moderne qui permet à l'utilisateur de **dessiner un objet à la souris** sur un canvas, puis de demander à un modèle d'intelligence artificielle de **reconnaître automatiquement** ce qui a été dessiné.
+
+L'application arbore un design unique baptisé **"Neon Studio"** : un thème sombre (Dark Mode) élégant couplé à un canvas de dessin blanc pour un contraste optimal, et une palette de couleurs sombres spécialement sélectionnées pour optimiser la détection par l'IA.
 
 Le modèle est un **réseau de neurones convolutif (CNN)** entraîné sur un sous-ensemble du dataset **Google Quick, Draw!**.
+
 
 ### Catégories reconnues
 
@@ -30,30 +33,32 @@ L'application distingue **5 classes** :
 ## 2. Démonstration
 
 <p align="center">
-  <img src="screenshots/test_01_maison_epais.png" width="600" alt="Démonstration — maison reconnue">
+  <img src="screenshots/test_01_maison_simple.png" width="600" alt="Démonstration — Interface Neon Studio">
 </p>
 
-**Exemple** : un dessin de maison simple (carré + triangle, pinceau épais) correctement identifié avec **99,78 %** de confiance.
+**Exemple** : L'interface "Neon Studio" avec un dessin de maison simple correctement identifié avec **97,31 %** de confiance.
 
 D'autres exemples sont disponibles dans le dossier `screenshots/` :
-- `test_04_soleil.png` — soleil reconnu (96,12 %)
-- `test_05_chat.png` — chat reconnu (96,40 %)
-- `test_07_voiture.png` — voiture reconnue (95,04 %)
-- `test_08_arbre.png` — arbre reconnu (97,28 %)
-- `test_06_soleil_courbe.png` — cas de confusion (soleil classé `chat`)
+- `test_03_soleil.png` — soleil reconnu (95,06 %)
+- `test_04_voiture.png` — voiture reconnue (99,13 %)
+- `test_05_arbre.png` — arbre reconnu (99,95 %)
+- `test_06_chat.png` — chat reconnu (97,27 %)
+- `test_07_etoile.png` — cas de confusion (étoile classée `chat`)
 
 <table>
   <tr>
-    <td><img src="screenshots/test_01_maison_epais.png" width="280"></td>
-    <td><img src="screenshots/test_04_soleil.png" width="280"></td>
-    <td><img src="screenshots/test_05_chat.png" width="280"></td>
+    <td><img src="screenshots/test_01_maison_simple.png" width="280"></td>
+    <td><img src="screenshots/test_05_arbre.png" width="280"></td>
+    <td><img src="screenshots/test_06_chat.png" width="280"></td>
   </tr>
   <tr>
-    <td align="center">Maison (99,78 %)</td>
-    <td align="center">Soleil (96,12 %)</td>
-    <td align="center">Chat (96,40 %)</td>
+    <td align="center">Maison (97,31 %)</td>
+    <td align="center">Arbre (99,95 %)</td>
+    <td align="center">Chat (97,27 %)</td>
   </tr>
 </table>
+
+
 ---
 
 ## 3. Structure du projet
@@ -61,55 +66,51 @@ D'autres exemples sont disponibles dans le dossier `screenshots/` :
 ```
 ai_sketch/
 │
-├── app.py                      # Application principale (interface PyQt5)
-├── train_model.py              # Script d'entraînement du CNN
-├── predict.py                  # Prédiction sur un dessin
-├── download_data.py            # Téléchargement du dataset Quick Draw
-├── preview.py                  # Aperçu visuel des images du dataset
-├── requirements.txt            # Dépendances Python
-├── README.md                   # Ce fichier
-├── RAPPORT.md                  # Rapport de projet
-├── RAPPORT.pdf                 # Rapport (version PDF)
+├── app.py # Application principale (Neon Studio - PyQt5)
+├── train_model.py # Script d'entraînement du CNN
+├── predict.py # Prédiction sur un dessin
+├── download_data.py # Téléchargement du dataset Quick Draw
+├── preview.py # Aperçu visuel des images du dataset
+├── requirements.txt # Dépendances Python
+├── README.md # Ce fichier
+├── RAPPORT.md # Rapport de projet
+├── RAPPORT.pdf # Rapport (version PDF)
 │
-├── data/                       # Dataset (2500 images, 5 classes)
-│   ├── arbre/                  #   500 images (.png)
-│   ├── chat/                   #   500 images (.png)
-│   ├── maison/                 #   500 images (.png)
-│   ├── soleil/                 #   500 images (.png)
-│   └── voiture/                #   500 images (.png)
+├── data/ # Dataset (2500 images, 5 classes)
+│ ├── arbre/ # 500 images (.png)
+│ ├── chat/ # 500 images (.png)
+│ ├── maison/ # 500 images (.png)
+│ ├── soleil/ # 500 images (.png)
+│ └── voiture/ # 500 images (.png)
 │
-├── model/                      # Modèle entraîné
-│   ├── sketch_model.h5         #   Réseau de neurones (format HDF5)
-│   └── classes.txt             #   Liste des classes (ordre des labels)
+├── model/ # Modèle entraîné
+│ ├── sketch_model.h5 # Réseau de neurones (format HDF5)
+│ └── classes.txt # Liste des classes (ordre des labels)
 │
-├── screenshots/                # Captures d'écran des tests
-│   ├── test_01_maison_epais.png
-│   ├── test_02_maison_fin.png
-│   ├── test_03_maison_detaillee.png
-│   ├── test_04_soleil.png
-│   ├── test_05_chat.png
-│   ├── test_06_soleil_courbe.png
-│   ├── test_07_voiture.png
-│   ├── test_08_arbre.png
-│   ├── test_09_zigzag1.png
-│   ├── test_10_zigzag2.png
-│   └── test_11_etoile.png
+├── screenshots/ # Captures d'écran des tests
+│ ├── test_01_maison_simple.png
+│ ├── test_02_maison_detaillee.png
+│ ├── test_03_soleil.png
+│ ├── test_04_voiture.png
+│ ├── test_05_arbre.png
+│ ├── test_06_chat.png
+│ └── test_07_etoile.png
 │
-├── cache_npy/                  # Cache des fichiers .npy téléchargés
-│   ├── house.npy
-│   ├── tree.npy
-│   ├── car.npy
-│   ├── cat.npy
-│   └── sun.npy
+├── cache_npy/ # Cache des fichiers .npy téléchargés
+│ ├── house.npy
+│ ├── tree.npy
+│ ├── car.npy
+│ ├── cat.npy
+│ └── sun.npy
 │
-└── venv/                       # Environnement virtuel Python 3.11
+└── venv/ # Environnement virtuel Python 3.11
 ```
 
 ### Légende
 
 | Dossier / fichier | Rôle |
 |---|---|
-| `app.py` | Point d'entrée — lance la fenêtre PyQt5 |
+| `app.py` | Point d'entrée — lance l'interface "Neon Studio" |
 | `train_model.py` | Charge `data/` et entraîne le CNN |
 | `predict.py` | Fonction de prédiction utilisée par `app.py` |
 | `download_data.py` | Télécharge les 5 fichiers `.npy` depuis Google |
@@ -119,6 +120,7 @@ ai_sketch/
 | `screenshots/` | Captures d'écran pour le rapport |
 | `cache_npy/` | Cache brut des `.npy` téléchargés (~150 Mo) |
 | `venv/` | Environnement virtuel (non livré, à recréer avec `py -3.11 -m venv venv`) |
+
 
 ---
 
@@ -201,7 +203,7 @@ Modèle enregistré : model/sketch_model.h5
 python app.py
 ```
 
-La fenêtre **AI Sketch** s'ouvre. Dessinez dans la zone blanche, puis cliquez sur **Reconnaître**.
+La fenêtre **Neon Studio** s'ouvre. Dessinez dans la zone blanche, puis cliquez sur **Reconnaître**.
 
 ---
 
@@ -209,51 +211,17 @@ La fenêtre **AI Sketch** s'ouvre. Dessinez dans la zone blanche, puis cliquez s
 
 | Fonctionnalité | Statut |
 |---|---|
-| Zone de dessin à la souris | ✅ |
-| Choix de la taille du pinceau (1 à 40) | ✅ |
-| Choix de la couleur (Noir / Rouge / Bleu / Vert) | ✅ |
+|Interface moderne "Dark Mode" (Neon Studio) | ✅ |
+| Zone de dessin à la souris(fond blanc) | ✅ |
+| Choix de la taille du pinceau (2 à 40) | ✅ |
+| Palette de 10 couleurs sombres optimisées pour l'IA | ✅ |
+|Outil Gomme (effacement réel) | ✅ |
 | Bouton **Effacer** | ✅ |
 | Bouton **Enregistrer** (export PNG) | ✅ |
 | Bouton **Reconnaître** (prédiction) | ✅ |
-| Affichage de la classe prédite | ✅ |
+| Affichage de la classe prédite en bleu néon | ✅ |
 | Affichage du score de confiance | ✅ |
 | Gestion du cas « modèle manquant » | ✅ |
-
-## 6bis. Bonus créativité
-
-L'application intègre **4 bonus créativité** supplémentaires :
-
-### 🎨 Filtres artistiques
-
-Appliqués en un clic grâce à OpenCV :
-- **Crayon** (`cv2.divide` + flou gaussien) → effet croquis
-- **Cartoon** (`bilateralFilter` + `adaptiveThreshold`) → contours + aplats
-- **Pastel** (`cv2.stylization`) → effet pictural
-- Bouton **↺** pour restaurer le dessin original
-
-### 🖼️ Galerie de dessins
-
-- Bouton **💾 Ajouter à la galerie** : enregistre le dessin dans `galerie/`
-- Panneau de **miniatures** à droite de la fenêtre
-- Double-clic sur une miniature pour la **recharger** dans le canvas
-- Bouton **🔄 Rafraîchir** pour mettre à jour la liste
-
-### 📜 Historique des prédictions
-
-Panneau conservant la liste des prédictions avec leur score de confiance.
-
-### ➕ Second objet
-
-Un bouton **➕ Ajouter un second objet** permet d'enchaîner plusieurs dessins, tout en conservant l'historique.
-
-### 🎨 Palette étendue
-
-8 couleurs disponibles : Noir, Rouge, Bleu, Vert, Orange, Violet, Rose, Marron.  
-Taille du pinceau par défaut : **15 px** (meilleure précision).
-
-<p align="center">
-  <img src="screenshots/bonus_creativite.png" width="700" alt="Bonus créativité">
-</p>
 
 ---
 
@@ -261,60 +229,44 @@ Taille du pinceau par défaut : **15 px** (meilleure précision).
 
 ### 7.1 Protocole
 
-Nous avons testé l'application avec **11 dessins réalisés en temps réel**, en faisant varier :
-- le **type d'objet** (5 classes + objets hors-catégories),
-- la **taille du pinceau** (pour observer son impact sur la confiance).
+Nous avons testé l'application avec 7 dessins réalisés en temps réel, en utilisant la palette de couleurs sombres de l'interface "Neon Studio" sur le canvas blanc.
 
 ### 7.2 Tests sur les 5 classes
 
 | # | Dessin | Prédiction | Confiance | Verdict |
 |---|---|---|---|---|
-| 1 | Maison (pinceau épais) | `maison` | **99,78 %** | ✅ |
-| 2 | Maison (pinceau fin) | `maison` | 60,66 % | ✅ |
-| 3 | Maison détaillée (porte + fenêtre) | `maison` | **99,86 %** | ✅ |
-| 4 | Soleil (rayons droits) | `soleil` | 96,12 % | ✅ |
-| 5 | Chat (oreilles + moustaches) | `chat` | 96,40 % | ✅ |
-| 6 | Soleil (rayons courbés) | `chat` | 49,47 % | ❌ |
-| 7 | Voiture (carrosserie + roues) | `voiture` | 95,04 % | ✅ |
-| 8 | Arbre (tronc + feuillage) | `arbre` | 97,28 % | ✅ |
+| 1 | Maison simple (orange) | `maison` | **97,31 %** | ✅ |
+| 2 | Maison  détaillée  (noir) | `maison` | 74,33 % | ✅ |
+| 3 | Soleil (orange) | `soleil` | **95,06 %** | ✅ |
+| 4 | Voiture (noir) | `voiture` | 99,13 % | ✅ |
+| 5 | Arbre (gris/bleu) | `arbre` | 99,95 % | ✅ |
+| 6 | Chat (violet) | `chat` | 97,27 % | ✅ |
 
-**Taux de réussite** : **7 / 8** (87,5 %).
+**Taux de réussite** : **6 / 6** (100 %).
 
 ### 7.3 Tests sur des dessins hors-catégories
 
 | # | Dessin | Prédiction | Confiance |
 |---|---|---|---|
-| 9 | Zigzag montant | `chat` | 94,19 % |
-| 10 | Zigzag horizontal | `voiture` | 60,24 % |
-| 11 | Étoile | `soleil` | 32,02 % |
+| 7 | Étoile (orange) | `chat` | 56,67 % |
 
 👉 Le modèle **force** toujours une réponse parmi les 5 classes, même pour des dessins hors-catégories.
 
-### 7.4 Observation importante : influence de la taille du pinceau
+### 7.4 Observation importante : l'impact du fond blanc et du contraste
 
-Nous avons observé que **la taille du pinceau a un impact direct sur la confiance du modèle** :
+L'utilisation d'un fond blanc couplé à des couleurs sombres dans l'interface "Neon Studio" a considérablement amélioré la précision.
+Les traits sont parfaitement détectés par l'IA, ce qui élimine les erreurs "Vide" observées dans les versions précédentes avec des couleurs pastel sur fond sombre. De plus, nous avons remarqué qu'un dessin trop détaillé (ex: maison avec porte et fenêtre à 74%) fait baisser la confiance par rapport à un dessin épuré (maison simple à 97%).
 
-| Taille du pinceau | Confiance observée |
-|---|---|
-| **Épais** (15–20 px) | ✅ Très haute (95–99 %) |
-| **Moyen** (10–12 px) | 🟡 Moyenne (60–95 %) |
-| **Fin** (5–8 px) | ⚠️ Basse (30–60 %) |
 
-**Explication** : ce comportement vient de deux facteurs :
-
-1. **Le seuillage binaire** (`cv2.threshold` dans `predict.py`) transforme les pixels en noir/blanc. Un trait épais reste solide après seuillage, un trait fin peut se fragmenter.
-2. **La cohérence avec le dataset Quick Draw** : les utilisateurs de Quick Draw dessinent avec des traits larges. Le modèle a donc appris des formes « pleines ». Un trait épais s'en rapproche, un trait fin s'en éloigne.
-
-Cette observation confirme la **sensibilité du modèle au style de dessin** plutôt qu'à la forme elle-même.
 ---
 
 ## 8. Limites et améliorations possibles
 
 ### Limites observées
 
-- **Sensibilité au style** : un trait épais ou irrégulier baisse la confiance.
-- **Confusion entre classes proches** : un soleil aux rayons courbés a été classé `chat`.
-- **Pas de classe « inconnu »** : un dessin hors-catégorie est toujours classé dans une des 5 classes.
+- **Sensibilité au détails** :  ajouter trop de détails (porte, fenêtre) fait chuter la confiance car le modèle préfère les formes simples (style Quick Draw).
+- **Pas de classe « inconnu »** : un dessin hors-catégorie (étoile) est toujours classé dans une des 5 classes avec une confiance plus ou moins élevée (56%).
+- **Contraste des couleurs** : l'IA nécessite un fort contraste. L'interface finale restreint la palette à des couleurs sombres pour pallier cela.
 
 ### Améliorations envisagées
 
@@ -353,4 +305,4 @@ Cette observation confirme la **sensibilité du modèle au style de dessin** plu
 
 **Nom** : [Steve Akoa / Groupe 4]
 **Cours** : ANI-2083 – Modèle de la SAT et IA dans les Arts Technologiques
-**Date de remise** : mardi 20 octobre 2026
+**Date de remise** : Mardi 27 octobre 2026.
