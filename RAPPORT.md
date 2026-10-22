@@ -1,4 +1,4 @@
-# RAPPORT — Projet Ne72on Sketch AI
+# RAPPORT — Projet Neon Sketch AI
 ## Reconnaissance de dessins à la main par intelligence artificielle
 
 **Cours** : ANI-2083 – Modèle de la SAT et IA dans les Arts Technologiques  
